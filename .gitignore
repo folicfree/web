@@ -13,3 +13,7 @@ img-sweep*.log
 
 # TypeScript incremental build info (local only)
 *.tsbuildinfo
+
+# OpenNext / Cloudflare build artifacts (generated, not committed)
+.open-next/
+.vercel/
