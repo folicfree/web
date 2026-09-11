@@ -4,9 +4,8 @@ import React from "react";
 import { getFood, type Food } from "@/data/foods";
 
 // Stateless shopping-list PDF: slugs in the URL -> rendered -> streamed.
-// Nothing persisted server-side (Section 6.6 pattern).
-
-export const runtime = "nodejs";
+// Nothing persisted server-side (Section 6.6 pattern). Runs on Pages Edge.
+export const runtime = "edge";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

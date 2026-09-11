@@ -4,8 +4,8 @@ import { aggregate, gbp, badgeMeta } from "@/lib/nutrition";
 
 // Auto-generated OG image per shared meal (Section 6.7).
 // Meal state is decoded from the URL — nothing is persisted server-side.
-
-export const runtime = "nodejs";
+// Runs on the Pages Edge runtime with nodejs_compat (see wrangler.jsonc).
+export const runtime = "edge";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

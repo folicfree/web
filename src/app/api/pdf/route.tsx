@@ -5,9 +5,8 @@ import { decodeMeal } from "@/lib/share";
 import { aggregate, gbp, badgeMeta } from "@/lib/nutrition";
 
 // Stateless PDF export (Section 6.6): meal JSON in URL -> rendered -> streamed.
-// Nothing is persisted server-side.
-
-export const runtime = "nodejs";
+// Nothing is persisted server-side. Runs on Pages Edge runtime with nodejs_compat.
+export const runtime = "edge";
 
 const styles = {
   page: { paddingTop: 40, paddingHorizontal: 40, fontSize: 11, color: "#111" },
