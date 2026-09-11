@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { screenSubmission, type ScreeningPayload } from "@/lib/ai/screen";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 
+export const runtime = "edge";
+
 // Anonymous submission endpoint (Sections 5, 10). No auth, no cookies.
 // Rate-limited by IP/hour, independently of AI provider limits.
 // Verdicts are logged and queued for manual review — nothing auto-publishes.

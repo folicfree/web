@@ -5,6 +5,7 @@ import { aggregate, badgeMeta, faBadgeText, gbp } from "@/lib/nutrition";
 import { getFood } from "@/data/foods";
 
 // Share landing page — meal decoded from URL only (Section 6.7). Nothing stored.
+export const runtime = "edge";
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ m?: string }> }): Promise<Metadata> {
   const { m } = await searchParams;

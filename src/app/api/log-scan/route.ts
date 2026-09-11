@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+export const runtime = "edge";
+
 // Anonymous scan logging — captures every barcode scan for data quality.
 // When AI/heuristic screening flags a product as "no added folic acid",
 // that data point is preserved in the verification queue instead of being lost.

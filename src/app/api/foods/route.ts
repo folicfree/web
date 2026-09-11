@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { loadCatalog } from "@/lib/catalog";
 
+export const runtime = "edge";
+
 // Serves the merged catalog (seed + Supabase overlay) to client components.
 // Falls back to bundled seed when Supabase isn't configured.
 export const revalidate = 300;

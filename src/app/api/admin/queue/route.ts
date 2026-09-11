@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { fetchPending, supabaseConfigured, updateQueueRow } from "@/lib/supabase";
 
+export const runtime = "edge";
+
 // Admin review-queue API (Section 5). Token-gated via x-admin-token —
 // the token lives in ADMIN_TOKEN env, server-side only.
 

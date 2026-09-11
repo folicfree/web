@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const runtime = "edge";
+
 // Barcode lookup — queries Open Food Facts (free, ODbL) by EAN and returns the
 // product's name/brands so the scanner can show something even when the food
 // isn't yet mapped in our catalog. No key required.
