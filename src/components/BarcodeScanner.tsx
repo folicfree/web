@@ -31,6 +31,8 @@ export default function BarcodeScanner({ variant = "card" }: { variant?: "hero" 
   const [msg, setMsg] = useState("");
   const [result, setResult] = useState<ScanResult | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const hiddenImgRef = useRef<HTMLImageElement>(null);
   const altTrack = useRef<HTMLDivElement>(null);
   const drag = useDragScroll(altTrack);
   const [scanning, setScanning] = useState(false);
@@ -53,31 +55,86 @@ export default function BarcodeScanner({ variant = "card" }: { variant?: "hero" 
   useEffect(() => () => stopStream(), []);
 
   async function startCamera() {
-    if (!navigator.mediaDevices?.getUserMedia) { setMsg("Camera is not available in this browser."); return; }
-    setScanning(true); setMsg("Starting camera — allow access when asked…");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-      if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
-      startScanning();
-    } catch {
-      setScanning(false);
-      retryRef.current += 1;
-      // One silent retry: mobile browsers often fail the first getUserMedia
-      // call while the permission prompt is still up.
-      if (retryRef.current === 1) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-          if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
-          setScanning(true);
-          setMsg("");
-          startScanning();
-          return;
-        } catch { /* fall through to the message below */ }
+    if (navigator.mediaDevices?.getUserMedia) {
+      // Chrome (desktop + Android): live video feed + continuous decode.
+      setScanning(true); setMsg("Starting camera — allow access when asked…");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
+        startScanning();
+        return;
+      } catch {
+        setScanning(false);
+        retryRef.current += 1;
+        // One silent retry: Chrome often fails the first getUserMedia call while
+        // the permission prompt is still up.
+        if (retryRef.current === 1) {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
+            setScanning(true);
+            setMsg("");
+            startScanning();
+            return;
+          } catch { /* fall through to the message below */ }
+        }
+        setMsg("Camera was blocked. Use your browser's site settings to allow camera access, then tap Scan again.");
+        return;
       }
-      setMsg("Camera was blocked. Use your browser's site settings to allow camera access, then tap Scan again.");
     }
+    // Cross-browser fallback (iOS Safari, Firefox, Safari desktop): navigator
+    // .mediaDevices isn't available there, so open the native camera via a file
+    // input (accept + capture) and decode the still photo with the same detector.
+    setScanning(true);
+    setMsg("Point the camera at the barcode and take a photo.");
+    if (fileRef.current) fileRef.current.value = "";
+    fileRef.current?.click();
   }
   function stopCamera() { stopStream(); setScanning(false); }
+
+  async function onCapture(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) { stopCamera(); setMsg("No photo taken — tap Scan again."); return; }
+    const url = URL.createObjectURL(f);
+    const img = hiddenImgRef.current;
+    if (!img) { stopCamera(); setMsg("Couldn't open that photo — try again."); return; }
+    try {
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("load failed"));
+        img.src = url;
+      });
+      await scanImage(img);
+    } catch {
+      stopCamera();
+      setMsg("Couldn't open that photo — try again.");
+    }
+  }
+
+  // Decode a single still image (from the native capture fallback) and, unlike
+  // the live loop, stop after the first attempt so the user can retry with a
+  // new photo without burning CPU on repeated decodes.
+  async function scanImage(el: HTMLImageElement) {
+    let BarcodeDetector: any;
+    try {
+      const mod = await import("barcode-detector");
+      BarcodeDetector = (mod as any).BarcodeDetector || (mod as any).default?.BarcodeDetector;
+    } catch { BarcodeDetector = undefined; }
+    if (!BarcodeDetector) { setMsg("Scanning isn't supported here."); stopCamera(); return; }
+    // Render at the photo's natural resolution so the decoder gets full detail.
+    el.width = el.naturalWidth || 0;
+    el.height = el.naturalHeight || 0;
+    try {
+      const detector = new BarcodeDetector({ formats: ["ean_13", "ean_8", "code_128", "upc_a"] });
+      const codes = await detector.detect(el);
+      if (codes?.length) {
+        const value = codes[0].rawValue;
+        if (value) { handleCode(value); return; }
+      }
+    } catch { /* detection failed */ }
+    stopCamera();
+    setMsg("Couldn't read a barcode in that photo — get closer, stay steady, and use good light, then tap Scan again.");
+  }
 
   // Kick off the detection loop once the video has real dimensions. Without this
   // the video shows but scanOnce() is never started (previously the scanner was
@@ -234,6 +291,16 @@ export default function BarcodeScanner({ variant = "card" }: { variant?: "hero" 
         </div>
       </div>
     )}
+    <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={onCapture}
+        className="sr-only"
+        aria-label="Take a photo of the barcode"
+      />
+      <img ref={hiddenImgRef} alt="" aria-hidden className="pointer-events-none fixed left-[-9999px] top-0" />
     </>
   );
 }
