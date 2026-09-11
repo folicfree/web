@@ -44,8 +44,10 @@ export function fetchPending(table: "submissions" | "price_submissions") {
   return sbFetch<Record<string, unknown>[]>(`${table}?submission_status=eq.pending_review&select=*&order=created_at.desc&limit=100`);
 }
 
-/** Verify/reject a queue row (service role bypasses RLS by design). */
+/** Verify/reject a queue row (service role bypasses RLS by design). ID must be
+ *  a UUID — anything else is rejected before it reaches the query string. */
 export function updateQueueRow(table: "submissions" | "price_submissions", id: string, submission_status: string) {
+  if (!/^[0-9a-fA-F-]{36}$/.test(id)) return Promise.resolve(null);
   return sbFetch<unknown>(`${table}?id=eq.${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { Prefer: "return=minimal" },
