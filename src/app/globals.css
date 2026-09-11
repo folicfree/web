@@ -1,0 +1,218 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --ink: #26251f;
+  --ink-dim: #5c5a50;
+  --ink-faint: #8b897c;
+  --paper: #faf8f2;
+  --surface: #ffffff;
+  --emerald: #0e8a5f;
+  --emerald-deep: #0a5c40;
+  --champagne: #a07f35;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Prevent double-tap zoom delay on mobile */
+a, button, input, select, textarea {
+  touch-action: manipulation;
+}
+
+/* Faint warm grain ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â texture without gloom */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: #0e8a5f26;
+}
+
+/* Warm paper card: crisp white, soft shadow, hairline */
+.card {
+  border-radius: 1.25rem;
+  border: 1px solid #26251f14;
+  background: var(--surface);
+  box-shadow:
+    0 1px 2px #26251f0d,
+    0 16px 40px -24px #26251f2e;
+}
+
+.card-hover {
+  transition: border-color .3s ease, transform .3s ease, box-shadow .3s ease;
+}
+.card-hover:hover {
+  border-color: #a07f3533;
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 2px #26251f0d,
+    0 24px 50px -24px #26251f45;
+}
+
+/* Clean-foods container: emerald ring + soft green glow so the carousel
+reads as "these are the clean foods". */
+.card-clean {
+border-color: #0e8a5f2e;
+box-shadow:
+0 1px 2px #0e8a5f0d,
+0 16px 44px -18px #0e8a5f40;
+}
+@media (min-width: 640px) {
+.card-clean {
+box-shadow:
+0 1px 2px #0e8a5f0d,
+0 16px 44px -18px #0e8a5f40,
+0 26px 80px -46px #0e8a5f45;
+}
+}
+
+/* Editorial display type */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.accent-line {
+  background: linear-gradient(90deg, transparent, #a07f3555, transparent);
+  height: 1px;
+}
+
+.hero-mesh {
+  background:
+    radial-gradient(55rem 32rem at 12% -12%, #0e8a5f14, transparent),
+    radial-gradient(40rem 26rem at 88% -6%, #a07f3512, transparent),
+    radial-gradient(30rem 20rem at 50% 30%, #0e8a5f08, transparent);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border-radius: 9999px;
+  background: var(--emerald-deep);
+  color: #f2fbf6;
+  font-weight: 600;
+  padding: .875rem 1.75rem;
+  min-height: 44px;
+  transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+  box-shadow: 0 12px 28px -12px #0a5c4073;
+}
+.btn-primary:hover { background: var(--emerald); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border-radius: 9999px;
+  border: 1px solid #26251f26;
+  font-weight: 500;
+  padding: .875rem 1.75rem;
+  min-height: 44px;
+  color: var(--ink);
+  background: var(--surface);
+  transition: border-color .2s ease, background .2s ease;
+}
+.btn-ghost:hover { border-color: #a07f3566; background: #a07f350d; }
+
+.nav-link {
+  color: var(--ink-dim);
+  border-radius: 9999px;
+  padding: .5rem .9rem;
+  font-size: .875rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: color .2s ease, background .2s ease;
+}
+.nav-link:hover { color: var(--ink); background: #26251f0d; }
+
+/* Outlined pill treatment for the nav CTAs so they stand out */
+.nav-pill {
+  border:  Ã¢â‚¬â€¹1px solid #26251f26;
+  background: rgba(255, 255, 255,  Ã¢â‚¬â€¹Ã¢â‚¬â€¹0.55);
+  transition: border-color .2s ease, background .2s ease;
+}
+.nav-pill:hover { border-color: #a07f3566; background: #a07f350d; }
+@media (max-width: 640px) {
+  .nav-pill { justify-content: center; }
+}
+
+/* Mobile: full-width buttons */
+@media (max-width: 640px) {
+  .btn-primary,
+  .btn-ghost {
+    width: 100%;
+    display: flex;
+  }
+}
+
+input, select, button, textarea { font-family: inherit; }
+input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid #0e8a5f66;
+  outline-offset: 2px;
+}
+
+/* Full-width on mobile, auto on larger screens */
+.btn-mobile-full {
+  width: 100%;
+}
+@media (min-width: 640px) {
+  .btn-mobile-full {
+    width: auto;
+  }
+}
+
+/* Barcode scanner: full-area barcode resting state (clear it's a scanner) */
+.barcode-pattern {
+  background-image: repeating-linear-gradient(
+    90deg,
+    #0f0f0f 0px, #0f0f0f 2px,
+    #fff 2px, #fff 4px,
+    #0f0f0f 4px, #0f0f0f 5px,
+    #fff 5px, #fff 8px,
+    #0f0f0f 8px, #0f0f0f 11px,
+    #fff 11px, #fff 12px,
+    #0f0f0f 12px, #0f0f0f 13px,
+    #fff 13px, #fff 17px
+  );
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-thumb { background: #26251f26; border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+

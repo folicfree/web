@@ -1,0 +1,12 @@
+// FolicFree — never commit secrets. Local env overrides live here.
+.env*
+!.env.example
+
+# Next.js
+.next/
+out/
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+img-sweep*.log
